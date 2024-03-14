@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Time Entry for {% if user.is_authenticated %}{{ user.first_name|default:"User" }} {{ user.last_name|default:"" }}{% else %}Guest{% endif %}</h2>
+<form method="post" class="my-4">
+    {% csrf_token %}
+    <div class="mb-3">
+        {{ form.as_p }}
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% for monday, entries in weeks %}
+    <!-- Use the id attribute to uniquely identify each collapse element -->
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+            <!-- Button to toggle collapse -->
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                Week of {{ monday|date:"l, F j, Y" }}
+            </button>
+        </h2>
+        <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <ul class="list-group mb-4">
+                    {% for entry in entries %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            {{ entry.date|date:"l, F j" }}: {{ entry.project_name }} - {{ entry.hours_worked }} hours - Notes: {{ entry.notes }}
+                        </span>
+                        <!-- Delete form -->
+                        <form action="{% url 'delete_entry' entry.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}

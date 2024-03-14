@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>All Time Entries</h2>
+
+<div class="container">
+    {% for entry in entries_by_user %}
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <strong>{{ entry.user.get_full_name }}</strong>: {{ entry.date|date:"Y-m-d" }} - {{ entry.hours_worked }} hours - {{ entry.project_name }} - Notes: {{ entry.notes }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
